@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Broadridge Content — Marketing Content Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#002B5C;
+    --navy-2:#00417f;
+    --royal:#0A5FD6;
+    --royal-d:#0b4fb0;
+    --sky:#4DA3FF;
+    --panel:#E9F1FB;
+    --panel-2:#F4F8FD;
+    --ink:#0A2540;
+    --muted:#5A7184;
+    --line:#D8E3F0;
+    --line-2:#e7eef7;
+    --white:#ffffff;
+    --shadow:0 1px 2px rgba(4,30,66,.04),0 12px 32px -12px rgba(4,30,66,.14);
+    --radius:14px;
+    --sans:'Figtree',-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:var(--panel-2);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+  }
+  ::selection{background:var(--sky);color:var(--navy)}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    background:var(--navy);
+    color:#fff;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 28px;
+    position:sticky;top:0;z-index:50;
+  }
+  .brandlock{display:flex;align-items:center;gap:12px}
+  .mark{width:34px;height:34px;flex:none;display:block}
+  .brandlock .n{font-weight:600;font-size:16px;letter-spacing:.2px;line-height:1.1}
+  .brandlock .s{font-size:11.5px;color:#9db8d8;font-weight:400;line-height:1.1}
+  .home-btn{
+    background:transparent;border:1px solid rgba(255,255,255,.28);
+    color:#fff;font-family:var(--sans);font-size:13.5px;font-weight:500;
+    padding:8px 18px;border-radius:8px;cursor:pointer;transition:background .15s,border-color .15s;
+  }
+  .home-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.5)}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+  .screen{display:none;animation:fade .35s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.screen.active{animation:none}}
+
+  /* ---------- home ---------- */
+  .home-head{text-align:center;padding:64px 0 12px}
+  .home-head h1{font-weight:300;font-size:clamp(38px,6vw,58px);letter-spacing:-1.5px;color:var(--navy)}
+  .home-head h1 b{font-weight:600;color:var(--royal)}
+  .home-head p{color:var(--muted);font-size:17px;margin-top:8px}
+
+  .grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:22px;
+    padding:36px 0 80px;
+  }
+  @media (max-width:760px){.grid{grid-template-columns:1fr}}
+  .card{
+    background:#fff;border:1px solid var(--line-2);border-radius:var(--radius);
+    padding:26px 26px 22px;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;
+  }
+  .card .ico{
+    width:38px;height:38px;border-radius:9px;background:var(--panel);
+    display:flex;align-items:center;justify-content:center;color:var(--royal);margin-bottom:16px;
+  }
+  .card .ico svg{width:20px;height:20px}
+  .card .tag{font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--sky);margin-bottom:5px}
+  .card h2{font-size:21px;font-weight:600;color:var(--navy);letter-spacing:-.3px}
+  .card .cdesc{color:var(--muted);font-size:14.5px;margin:9px 0 18px;max-width:44ch}
+  .chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:auto}
+  .chip{
+    font-family:var(--sans);font-size:13.5px;font-weight:500;color:var(--ink);
+    background:#fff;border:1px solid var(--line);border-radius:9px;
+    padding:8px 14px;cursor:pointer;transition:all .14s;
+  }
+  .chip:hover{border-color:var(--royal);color:var(--royal);background:var(--panel-2);transform:translateY(-1px)}
+
+  /* ---------- form ---------- */
+  .back{
+    display:inline-flex;align-items:center;gap:7px;color:var(--royal);
+    font-size:14px;font-weight:500;background:none;border:none;cursor:pointer;
+    font-family:var(--sans);padding:0;margin:34px 0 20px;
+  }
+  .back:hover{text-decoration:underline}
+  .step-pill{display:inline-flex;align-items:center;gap:10px;margin:34px 0 20px}
+  .step-pill .lbl{font-size:12px;font-weight:600;letter-spacing:1.2px;color:var(--sky)}
+  .form-head h2{font-size:32px;font-weight:600;color:var(--navy);letter-spacing:-.6px}
+  .form-head .sub{color:var(--muted);font-size:15px;margin-top:4px;margin-bottom:26px}
+
+  .notice{
+    background:#FFF9E9;border:1px solid #F1E3B8;color:#7a6420;
+    font-size:13.5px;border-radius:10px;padding:13px 16px;margin-bottom:26px;
+  }
+  form{max-width:720px;padding-bottom:70px}
+  .field{margin-bottom:22px}
+  label.flabel{display:block;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:8px}
+  label.flabel .opt{font-weight:400;color:var(--muted);font-size:13px}
+  select,input[type=text],textarea{
+    width:100%;font-family:var(--sans);font-size:14.5px;color:var(--ink);
+    background:#fff;border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;transition:border-color .15s,box-shadow .15s;
+  }
+  select:focus,input:focus,textarea:focus{outline:none;border-color:var(--royal);box-shadow:0 0 0 3px rgba(10,95,214,.12)}
+  textarea{resize:vertical;min-height:88px;line-height:1.55}
+  select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235A7184' d='M6 8 0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;padding-right:38px}
+
+  .pills{display:flex;flex-wrap:wrap;gap:9px}
+  .pill{
+    font-family:var(--sans);font-size:13.5px;font-weight:500;color:var(--ink);
+    background:#fff;border:1px solid var(--line);border-radius:999px;
+    padding:8px 16px;cursor:pointer;transition:all .14s;user-select:none;
+  }
+  .pill:hover{border-color:var(--royal)}
+  .pill.on{background:var(--royal);border-color:var(--royal);color:#fff}
+  .pill.disabled{opacity:.4;pointer-events:none}
+
+  .sect{margin:34px 0 18px;padding-top:24px;border-top:1px solid var(--line)}
+  .sect .k{font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--sky);margin-bottom:4px}
+  .sect h3{font-size:19px;font-weight:600;color:var(--navy);letter-spacing:-.2px}
+  .sect p{color:var(--muted);font-size:14px;margin-top:3px}
+  .subpanel{background:#fff;border:1px solid var(--line);border-left:3px solid var(--royal);border-radius:10px;padding:18px 18px 4px;margin-bottom:22px}
+  .subpanel .subhead{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:14px}
+  .subpanel .subhead .opt{font-weight:400;color:var(--muted);font-size:12.5px;margin-left:4px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:600px){.row2{grid-template-columns:1fr}}
+
+  .sme-wrap{background:#fff;border:1px solid var(--line-2);border-radius:14px;padding:22px;margin:22px 0 26px;box-shadow:var(--shadow)}
+  .sme-wrap .k{font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--sky)}
+  .sme-wrap h3{font-size:19px;font-weight:600;color:var(--navy);margin:2px 0 4px}
+  .sme-wrap .note{color:var(--muted);font-size:13px;margin-bottom:16px}
+  .sme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .sme{border:1px solid var(--line);border-radius:11px;padding:14px;display:flex;gap:12px;align-items:flex-start;background:var(--panel-2)}
+  .sme .av{width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none}
+  .sme .nm{font-weight:600;font-size:14.5px;color:var(--ink)}
+  .sme .tt{font-size:12.5px;color:var(--muted);line-height:1.35}
+  .sme .ar{display:inline-block;margin-top:7px;font-size:11px;font-weight:600;color:var(--royal);background:var(--panel);border-radius:999px;padding:3px 9px}
+  .src-sum{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+  .src-sum span{font-size:12px;font-weight:600;color:var(--navy);background:var(--panel);border-radius:999px;padding:5px 11px}
+
+  .radios{display:flex;flex-wrap:wrap;gap:20px}
+  .radio{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
+  .radio input{accent-color:var(--royal);width:16px;height:16px}
+
+  .submit{
+    width:100%;background:var(--royal);color:#fff;border:none;
+    font-family:var(--sans);font-size:15.5px;font-weight:600;letter-spacing:.2px;
+    padding:15px;border-radius:11px;cursor:pointer;transition:background .15s;margin-top:6px;
+  }
+  .submit:hover{background:var(--royal-d)}
+
+  /* ---------- preview ---------- */
+  .preview-head{margin:34px 0 4px}
+  .preview-head h2{font-size:30px;font-weight:600;color:var(--navy);letter-spacing:-.5px}
+  .previewgrid{padding-bottom:80px}
+
+  /* carousel cover mockup */
+  .mockup-frame{
+    background:var(--navy);border-radius:16px;padding:26px;margin:22px 0 26px;
+    box-shadow:var(--shadow);
+  }
+  .mockup-meta{text-align:center;color:#9db8d8;font-size:12.5px;margin-bottom:16px;line-height:1.4}
+  .mockup-meta b{color:#cfe0f5;font-weight:600}
+  .slide{
+    aspect-ratio:4/5;max-width:360px;margin:0 auto;border-radius:12px;overflow:hidden;
+    background:linear-gradient(150deg,var(--navy) 0%,var(--navy-2) 45%,var(--royal) 130%);
+    position:relative;padding:26px;display:flex;flex-direction:column;color:#fff;
+  }
+  .slide .srow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .slide .swm{display:flex;align-items:center;gap:7px;font-weight:600;font-size:15px;letter-spacing:.2px}
+  .slide .swm svg{width:20px;height:20px}
+  .slide .spill{
+    font-size:9px;font-weight:600;letter-spacing:1px;color:#cfe0f5;
+    border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:4px 9px;white-space:nowrap;
+  }
+  .slide .sbadge{
+    align-self:flex-start;margin-top:auto;font-size:9.5px;font-weight:600;letter-spacing:1.3px;
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+    border-radius:6px;padding:5px 10px;margin-bottom:14px;
+  }
+  .slide h3{font-weight:400;font-size:27px;line-height:1.12;letter-spacing:-.5px}
+  .slide .ssub{font-size:13px;color:#c9dbf2;margin-top:12px;line-height:1.45;max-width:26ch}
+  .slide .sfoot{position:absolute;bottom:16px;left:26px;right:26px;display:flex;justify-content:space-between;font-size:10px;color:#8fb0d8}
+  .slide .snodes{position:absolute;right:-30px;bottom:-30px;width:150px;height:150px;opacity:.5}
+
+  .prompt-block{
+    background:#0a1f3d;border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+  }
+  .prompt-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .prompt-bar .pt{color:#9db8d8;font-size:12.5px;font-weight:500;letter-spacing:.3px}
+  .copy-mini{
+    background:rgba(255,255,255,.1);color:#dce9f8;border:none;font-family:var(--sans);
+    font-size:12.5px;font-weight:500;padding:6px 13px;border-radius:7px;cursor:pointer;transition:background .15s;
+  }
+  .copy-mini:hover{background:rgba(255,255,255,.2)}
+  pre.prompt{
+    font-family:var(--mono);font-size:12px;line-height:1.6;color:#cfe0f5;
+    padding:18px 18px 20px;white-space:pre-wrap;word-break:break-word;max-height:420px;overflow:auto;
+  }
+  .pactions{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+  .pactions button{flex:1;min-width:200px;font-family:var(--sans);font-size:14.5px;font-weight:600;padding:14px;border-radius:11px;cursor:pointer;transition:all .15s;border:1px solid}
+  .btn-primary{background:var(--royal);color:#fff;border-color:var(--royal)}
+  .pactions .btn-link{flex:1;min-width:200px;font-family:var(--sans);font-size:14.5px;font-weight:600;padding:14px;border-radius:11px;border:1px solid var(--royal);text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:all .15s}
+  .pactions .btn-link:hover{background:var(--royal-d)}
+  .btn-primary:hover{background:var(--royal-d)}
+  .btn-ghost{background:#fff;color:var(--navy);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--royal);color:var(--royal)}
+
+  .toast{
+    position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--navy);color:#fff;font-size:14px;font-weight:500;
+    padding:12px 22px;border-radius:10px;box-shadow:0 10px 30px rgba(4,30,66,.3);
+    opacity:0;pointer-events:none;transition:all .25s;z-index:99;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brandlock">
+    <svg class="mark" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <rect width="48" height="48" rx="9" fill="#0A5FD6"/>
+      <path d="M14 15c6 0 9 4 10 9 1-5 4-9 10-9-3 3-4 6-4 9s1 6 4 9c-6 0-9-4-10-9-1 5-4 9-10 9 3-3 4-6 4-9s-1-6-4-9Z" fill="#fff"/>
+    </svg>
+    <div>
+      <div class="n">Broadridge Content</div>
+      <div class="s">Marketing Content Assistant</div>
+    </div>
+  </div>
+  <button class="home-btn" onclick="goHome()">Home</button>
+</div>
+
+<!-- ============ HOME ============ -->
+<section id="home" class="screen active">
+  <div class="wrap">
+    <div class="home-head">
+      <h1>Campaign <b>Generator</b></h1>
+      <p>Select a content type to build your prompt.</p>
+    </div>
+    <div class="grid" id="bucketGrid"></div>
+  </div>
+</section>
+
+<!-- ============ FORM ============ -->
+<section id="form" class="screen">
+  <div class="wrap">
+    <button class="back" onclick="goHome()">← Back to home</button>
+    <div class="form-head">
+      <h2 id="fTitle">LinkedIn Carousel</h2>
+      <div class="sub" id="fSub">8-slide swipe carousel in Broadridge brand</div>
+    </div>
+    <div class="notice">Attach any relevant report PDFs, campaign briefs, or transcripts in your Claude chat before starting.</div>
+    <form id="theForm" onsubmit="buildPrompt(event)"></form>
+  </div>
+</section>
+
+<!-- ============ PREVIEW ============ -->
+<section id="preview" class="screen">
+  <div class="wrap">
+    <button class="back" onclick="showScreen('form')">← Back to form</button>
+    <div class="step-pill"><span class="lbl">STEP 3 · LIVE PREVIEW</span></div>
+    <div class="preview-head"><h2 id="pTitle">LinkedIn Carousel</h2></div>
+    <div class="previewgrid">
+      <div id="visualPreview"></div>
+      <div class="prompt-block">
+        <div class="prompt-bar">
+          <span class="pt">Prompt for Claude</span>
+          <button class="copy-mini" onclick="copyPrompt()">Copy prompt</button>
+        </div>
+        <pre class="prompt" id="promptText"></pre>
+      </div>
+      <div class="pactions">
+        <a class="btn-primary btn-link" id="claudeLink" href="https://claude.ai/new" target="_blank" rel="noopener noreferrer" onclick="openInClaude(event)">Open in Claude with prompt</a>
+        <button class="btn-ghost" onclick="goHome()">Generate another</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast">Prompt copied</div>
+
+<script>
+/* ---------------- icons ---------------- */
+const IC = {
+  tactics:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3v18l7-5 7 5V3z" stroke-linejoin="round"/></svg>',
+  longform:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+  shortform:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l5 5v13H6z"/><path d="M14 3v5h5" stroke-linejoin="round"/></svg>',
+  analysis:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  review:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z" stroke-linejoin="round"/></svg>'
+};
+
+/* ---------------- Broadridge taxonomy ---------------- */
+const SEGMENTS = ["Capital Markets","Wealth Management","Asset Management","Issuer / Governance","Digital Assets & DLT","Investor Communications"];
+const THEMES = ["DLT & digital asset adoption","Post-trade modernization / T+1","Proxy & governance season","Wealth platform modernization","AI in capital markets","Regulatory & investor communications"];
+const PERSONAS = ["Head of Digital Innovation","COO / Head of Operations","CIO / Asset Manager","Head of Wealth Technology","Corporate Secretary / Governance","CTO / Head of Fintech","Head of Post-Trade"];
+const SECONDARY = ["— none —","Board member","Middle / back-office lead","Product owner","Head of Compliance","Enterprise architect"];
+const REGIONS = ["North American Markets","EMEA Markets","APAC Markets"];
+const STAGES = ["Awareness","Consideration","Decision","Retention / Expansion"];
+
+/* long-form research options */
+const DATE_RANGES = ["Use brief defaults (last 6 months)","Last 30 days","Last 90 days","Last 6 months","Last 12 months","All time"];
+const CALL_TYPES = ["Discovery","Demo","QBR / Business review","Renewal","Escalation / Support","Lost deal"];
+const DOC_TYPES = ["Case studies","Win / loss notes","Research reports","Product briefs","Sales decks","Analyst notes"];
+
+/* placeholder SME roster (swap for real names) */
+const SME_POOL = {
+  "Capital Markets":[{n:"John Doe",t:"Head of Capital Markets Strategy"},{n:"Priya Shah",t:"Director, Trading Operations"}],
+  "Wealth Management":[{n:"Sarah Miller",t:"VP, Wealth Platform Strategy"},{n:"Daniel Kim",t:"Principal, Advisor Solutions"}],
+  "Asset Management":[{n:"Michael Chen",t:"Head of Asset Management Insights"},{n:"Laura Bennett",t:"Director, Fund Operations"}],
+  "Issuer / Governance":[{n:"Emily Carter",t:"Head of Governance Research"},{n:"Robert Hayes",t:"Director, Proxy Services"}],
+  "Digital Assets & DLT":[{n:"Alex Rivera",t:"Head of Digital Assets"},{n:"Nina Patel",t:"Product Lead, DLT Platforms"}],
+  "Investor Communications":[{n:"James Wilson",t:"VP, Investor Communications"},{n:"Olivia Grant",t:"Director, Regulatory Communications"}]
+};
+const THEME_SME = {
+  "DLT & digital asset adoption":{n:"Marcus Lee",t:"Distributed Ledger Solutions Architect"},
+  "Post-trade modernization / T+1":{n:"Rachel Adams",t:"Head of Post-Trade Transformation"},
+  "Proxy & governance season":{n:"Thomas Reed",t:"Senior Governance Analyst"},
+  "Wealth platform modernization":{n:"Hannah Brooks",t:"Wealth Technology Product Director"},
+  "AI in capital markets":{n:"Kevin Park",t:"Head of Applied AI, Capital Markets"},
+  "Regulatory & investor communications":{n:"Grace Morgan",t:"Regulatory Content Lead"}
+};
+const WRITER_SME = {n:"Jane Smith",t:"Senior Thought Leadership Writer"};
+
+/* per-theme preview copy (headline + sub for the cover slide) */
+const THEME_COPY = {
+  "DLT & digital asset adoption":{h:"Digital asset adoption is now operational.",s:"After six years of tracking the shift, here is where liquidity is actually forming."},
+  "Post-trade modernization / T+1":{h:"T+1 was the deadline. Resilience is the goal.",s:"What separates firms that automated from firms that just accelerated."},
+  "Proxy & governance season":{h:"Proxy season is a data problem.",s:"How governance teams turn disclosure into investor engagement."},
+  "Wealth platform modernization":{h:"Advisors do not want another screen.",s:"Modernizing the wealth stack without breaking the book of business."},
+  "AI in capital markets":{h:"AI in capital markets, past the pilot.",s:"Where firms are seeing real operational lift, and where they are not."},
+  "Regulatory & investor communications":{h:"Regulatory comms that investors actually read.",s:"Turning a compliance obligation into a retention moment."}
+};
+
+/* ---------------- content types ---------------- */
+/* mode: create | analyze | review   */
+const BUCKETS = [
+  {name:"Campaign Tactics",tag:"CAMPAIGN ASSETS",icon:"tactics",
+   desc:"Build campaign assets: emails, social ads, landing pages, and BDR sequences.",
+   items:[
+     {id:"email-nurture",label:"Email Nurture",mode:"create",sub:"Multi-touch nurture sequence in Broadridge brand",fmt:"FORMAT: 4-email nurture. Each email = subject line + preview text + 90–130 word body + single CTA. Escalate from insight to proof to offer across the sequence."},
+     {id:"social-ads",label:"Social Ads",mode:"create",sub:"Paid social ad variants for LinkedIn",fmt:"FORMAT: 5 LinkedIn single-image ad variants. Each = hook (under 12 words) + 2-line body + CTA. Provide 2 headline options per variant. No hashtags."},
+     {id:"landing-page",label:"Landing Page Copy",mode:"create",sub:"Conversion landing page for a gated asset or event",fmt:"FORMAT: Full landing page. Hero (headline + sub + CTA), 3 value props with proof, 1 stat band, short-form fields note, and a closing CTA. Above the fold must state the outcome, not the format."},
+     {id:"bdr-emails",label:"BDR Emails",mode:"create",sub:"Cold + follow-up sequence for sales development",fmt:"FORMAT: 4-step BDR sequence (cold, bump, value-add, breakup). Each under 90 words, one clear ask, personalized opener slot. Plain text, no marketing polish."}
+   ]},
+  {name:"Long Form Assets",tag:"LONG FORM",icon:"longform",
+   desc:"Brief → outline → draft workflow for thought leadership and reports.",
+   items:[
+     {id:"ebook",label:"eBook",mode:"create",sub:"Long-form gated eBook with a brief → outline → draft flow",fmt:"FORMAT: eBook. Deliver working title options, a chapter outline (5–7 chapters), then draft chapter 1. Executive-ready, data-backed, one narrative through-line."},
+     {id:"guides",label:"Guides",mode:"create",sub:"Practical how-to guide for a buyer segment",fmt:"FORMAT: Practical guide. Intro framing the problem, 5–7 actionable sections with sub-steps, a checklist recap, and a CTA. Operator-level specificity, not theory."},
+     {id:"whitepapers",label:"Whitepapers",mode:"create",sub:"Research-grade whitepaper anchored in study data",fmt:"FORMAT: Whitepaper. Abstract, problem, data-backed analysis (cite sources), implications, and recommendation. Neutral, research-grade tone. Footnote every stat."},
+     {id:"blogs",label:"Blogs",mode:"create",sub:"Thought-leadership blog post",fmt:"FORMAT: 900–1,200 word blog. One argument, sub-headed sections, one data anchor, clear takeaway. Sentence-case headline, no listicle padding."},
+     {id:"webinars",label:"Webinars",mode:"create",sub:"Webinar abstract, run-of-show, and promo copy",fmt:"FORMAT: Webinar kit. Title + abstract, 3 learning outcomes, speaker-ready run-of-show with timings, and 2 promo email blurbs."}
+   ]},
+  {name:"Short Form Assets",tag:"SHORT FORM",icon:"shortform",
+   desc:"Repurpose long-form into carousels, infographics, and short video.",
+   items:[
+     {id:"infographics",label:"Infographics",mode:"create",sub:"Single-frame data infographic spec",fmt:"FORMAT: Infographic spec. One headline stat, 4–6 supporting data points with labels, a source line, and layout notes for design. Every number must trace to a source."},
+     {id:"carousel",label:"LinkedIn Carousel",mode:"create",flagship:true,sub:"8-slide swipe carousel in Broadridge brand",fmt:"FORMAT: 8 slides, 4:5. Cover + 5 numbered insight slides + 1 proof/stat slide + CTA slide. One headline + one-line sub per slide; category pill top-right; Broadridge wordmark top-left. Proof slide uses the anchor stats from the referenced study."},
+     {id:"video-shorts",label:"Video Script (Shorts)",mode:"create",sub:"30–60s vertical video script",fmt:"FORMAT: 30–60s vertical script. Hook (first 3s), 3 beats, on-screen text cues, and a spoken CTA. Two-column: [VISUAL] | [VO]. Written for sound-off viewing."},
+     {id:"checklists",label:"Checklists",mode:"create",sub:"Actionable checklist asset",fmt:"FORMAT: Checklist. 8–12 items grouped into 2–3 phases, each item a verifiable action. Add a one-line why for each. Downloadable-asset ready."},
+     {id:"comparison-charts",label:"Comparison Charts",mode:"create",sub:"Side-by-side comparison table",fmt:"FORMAT: Comparison table. 3–4 options across 5–7 evaluation criteria, plus a one-line verdict per row. Neutral framing; no strawman columns."}
+   ]},
+  {name:"Analysis",tag:"ANALYSIS",icon:"analysis",
+   desc:"Analyze performance and build data-driven recommendations.",
+   items:[
+     {id:"li-ad-analyzer",label:"LinkedIn Ad Analyzer",mode:"analyze",sub:"Diagnose LinkedIn ad performance and recommend fixes",fmt:"TASK: Analyze the pasted LinkedIn ad data. Diagnose CTR, CPL, and engagement against B2B fintech benchmarks. Return: what's working, what's underperforming, 3 prioritized fixes, and 2 new creative angles to test."},
+     {id:"email-analyzer",label:"Email Analyzer",mode:"analyze",sub:"Diagnose email campaign performance",fmt:"TASK: Analyze the pasted email metrics. Assess open, click, and reply rates vs. benchmark. Return: subject-line diagnosis, body/CTA issues, deliverability flags, and a prioritized fix list."},
+     {id:"campaign-reporting",label:"Campaign Reporting",mode:"analyze",sub:"Turn raw campaign data into an exec-ready readout",fmt:"TASK: Turn the pasted campaign data into an exec readout. Return: headline result, funnel breakdown, what drove it, risks, and next-quarter recommendation. Lead with the number that matters."}
+   ]},
+  {name:"Messaging Reviewer",tag:"REVIEW",icon:"review",
+   desc:"Pressure-test messaging for industry fit and authenticity.",
+   items:[
+     {id:"industry-reviewer",label:"Industry Messaging Reviewer",mode:"review",sub:"Check copy for capital-markets credibility",fmt:"TASK: Review the pasted copy as a capital-markets buyer would. Flag anything factually loose, off-segment, or non-credible to a fintech audience. Return: credibility score, flagged lines with fixes, and a tightened rewrite."},
+     {id:"ai-slop-detector",label:"AI Slop Detector",mode:"review",sub:"Strip generic AI-generated tells from copy",fmt:"TASK: Scan the pasted copy for AI-generated tells: empty intensifiers, hollow transitions, em-dash padding, 'in today's landscape' filler, and claim-free sentences. Return: a flagged list, a slop score, and a rewrite that keeps only load-bearing lines."}
+   ]}
+];
+
+/* flat lookup */
+const ITEMS = {};
+BUCKETS.forEach(b=>b.items.forEach(it=>{it.bucket=b.name;if(b.tag==='LONG FORM')it.research=true;ITEMS[it.id]=it;}));
+
+let current = null;
+
+/* ---------------- render home ---------------- */
+function renderHome(){
+  const g = document.getElementById('bucketGrid');
+  g.innerHTML = BUCKETS.map(b=>`
+    <div class="card">
+      <div class="ico">${IC[b.icon]}</div>
+      <div class="tag">${b.tag}</div>
+      <h2>${b.name}</h2>
+      <p class="cdesc">${b.desc}</p>
+      <div class="chips">
+        ${b.items.map(it=>`<button class="chip" onclick="openForm('${it.id}')">${it.label}</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+/* ---------------- render form ---------------- */
+function openForm(id){
+  current = ITEMS[id];
+  document.getElementById('fTitle').textContent = current.label;
+  document.getElementById('fSub').textContent = current.sub;
+  const f = document.getElementById('theForm');
+
+  if(current.mode==='create'){
+    f.innerHTML = createFormHTML();
+  } else if(current.mode==='analyze'){
+    f.innerHTML = pasteFormHTML('Paste your campaign data',"Paste ad copy, metrics, exports, or raw numbers here…");
+  } else {
+    f.innerHTML = pasteFormHTML('Paste the copy to review',"Paste the messaging, email, ad, or page copy you want pressure-tested…");
+  }
+  showScreen('form');
+  window.scrollTo(0,0);
+}
+
+function createFormHTML(){
+  return `
+    <div class="field">
+      <label class="flabel">Campaign Theme</label>
+      <select id="theme">${THEMES.map(t=>`<option>${t}</option>`).join('')}</select>
+    </div>
+    <div class="field">
+      <label class="flabel">Solution / Segment <span class="opt">(up to 3)</span></label>
+      <div class="pills" id="segPills">${SEGMENTS.map(s=>`<span class="pill" onclick="togglePill(this)">${s}</span>`).join('')}</div>
+    </div>
+    <div class="field">
+      <label class="flabel">Region</label>
+      <div class="radios">${REGIONS.map((r,i)=>`<label class="radio"><input type="radio" name="region" value="${r}" ${i===0?'checked':''}>${r}</label>`).join('')}</div>
+    </div>
+    <div class="field">
+      <label class="flabel">Buyer Stage</label>
+      <select id="stage">${STAGES.map(s=>`<option>${s}</option>`).join('')}</select>
+    </div>
+    <div class="field">
+      <label class="flabel">Primary Persona</label>
+      <select id="persona">${PERSONAS.map(p=>`<option>${p}</option>`).join('')}</select>
+    </div>
+    <div class="field">
+      <label class="flabel">Secondary Persona <span class="opt">(optional)</span></label>
+      <select id="persona2">${SECONDARY.map(p=>`<option>${p}</option>`).join('')}</select>
+    </div>
+    <div class="field">
+      <label class="flabel">Client Stories <span class="opt">(up to 5)</span></label>
+      <textarea id="stories" placeholder="Story notes, named clients, or context not in the database…"></textarea>
+    </div>
+    <div class="field">
+      <label class="flabel">Primary CTA</label>
+      <input type="text" id="cta" placeholder="e.g. Download the DLT in the Real World report">
+    </div>
+    <div class="field">
+      <label class="flabel">Additional Context</label>
+      <textarea id="ctx" placeholder="Brief context, links, or special instructions…"></textarea>
+    </div>
+    ${current.research?researchHTML():''}
+    <button class="submit" type="submit">Build prompt →</button>`;
+}
+
+function researchHTML(){
+  const pills=(arr,id)=>`<div class="pills" id="${id}">${arr.map(s=>`<span class="pill" onclick="this.classList.toggle('on')">${s}</span>`).join('')}</div>`;
+  return `
+    <div class="sect">
+      <div class="k">RESEARCH</div>
+      <h3>Where should Claude dig?</h3>
+      <p>Pick one or both. Filters are optional; anything left blank uses the brief above.</p>
+    </div>
+    <div class="field">
+      <label class="flabel">Research sources</label>
+      <div class="pills" id="srcPills">
+        <span class="pill" data-src="gong" onclick="toggleSrc(this)">Gong calls</span>
+        <span class="pill" data-src="docs" onclick="toggleSrc(this)">Internal documents</span>
+      </div>
+    </div>
+    <div class="subpanel" id="gongPanel" hidden>
+      <div class="subhead">Gong call filters<span class="opt">optional</span></div>
+      <div class="row2">
+        <div class="field">
+          <label class="flabel">Date range</label>
+          <select id="gongDate">${DATE_RANGES.map(d=>`<option>${d}</option>`).join('')}</select>
+        </div>
+        <div class="field">
+          <label class="flabel">Client / account <span class="opt">(optional)</span></label>
+          <input type="text" id="gongClient" placeholder="e.g. a named account or 'any'">
+        </div>
+      </div>
+      <div class="field">
+        <label class="flabel">Industry focus <span class="opt">(optional)</span></label>
+        <input type="text" id="gongIndustry" placeholder="Defaults to the segment(s) picked above">
+      </div>
+      <div class="field">
+        <label class="flabel">Call types <span class="opt">(optional)</span></label>
+        ${pills(CALL_TYPES,'callPills')}
+      </div>
+      <div class="field">
+        <label class="flabel">Keywords to listen for <span class="opt">(optional)</span></label>
+        <input type="text" id="gongKeywords" placeholder="e.g. tokenization, settlement risk, cost to serve">
+      </div>
+    </div>
+    <div class="subpanel" id="docsPanel" hidden>
+      <div class="subhead">Internal document filters<span class="opt">optional</span></div>
+      <div class="field">
+        <label class="flabel">Document types</label>
+        ${pills(DOC_TYPES,'docPills')}
+      </div>
+      <div class="field">
+        <label class="flabel">Folder, drive, or doc names <span class="opt">(optional)</span></label>
+        <input type="text" id="docLocation" placeholder="e.g. Marketing > Research 2026, or specific report titles">
+      </div>
+    </div>`;
+}
+function toggleSrc(el){
+  el.classList.toggle('on');
+  const on=[...document.querySelectorAll('#srcPills .pill.on')].map(p=>p.dataset.src);
+  document.getElementById('gongPanel').hidden=!on.includes('gong');
+  document.getElementById('docsPanel').hidden=!on.includes('docs');
+}
+function pickedIn(id){return [...document.querySelectorAll(`#${id} .pill.on`)].map(p=>p.textContent);}
+
+/* SME suggestions from segment + theme */
+function suggestSMEs(seg,theme){
+  const out=[];const seen=new Set();
+  const add=(p,area)=>{if(p&&!seen.has(p.n)&&out.length<4){seen.add(p.n);out.push({...p,area});}};
+  add(THEME_SME[theme],theme);
+  (seg.length?seg:["Capital Markets"]).forEach(s=>add((SME_POOL[s]||[])[0],s));
+  (seg.length?seg:["Capital Markets"]).forEach(s=>add((SME_POOL[s]||[])[1],s));
+  add(WRITER_SME,"Writing & narrative");
+  return out;
+}
+function smeHTML(list){
+  const ini=n=>n.split(' ').map(w=>w[0]).join('');
+  return `
+  <div class="sme-wrap">
+    <div class="k">SUBJECT MATTER EXPERTS</div>
+    <h3>Who to reach out to</h3>
+    <div class="note">Placeholder names based on your segment and theme. Swap in real people before outreach.</div>
+    <div class="sme-grid">${list.map(p=>`
+      <div class="sme"><div class="av">${ini(p.n)}</div>
+        <div><div class="nm">${p.n}</div><div class="tt">${p.t}</div><span class="ar">${p.area}</span></div>
+      </div>`).join('')}</div>
+  </div>`;
+}
+
+function pasteFormHTML(label,ph){
+  return `
+    <div class="field">
+      <label class="flabel">${label}</label>
+      <textarea id="pasteData" style="min-height:170px" placeholder="${ph}"></textarea>
+    </div>
+    <div class="field">
+      <label class="flabel">Segment context <span class="opt">(optional)</span></label>
+      <div class="pills" id="segPills">${SEGMENTS.map(s=>`<span class="pill" onclick="togglePill(this)">${s}</span>`).join('')}</div>
+    </div>
+    <div class="field">
+      <label class="flabel">Anything else Claude should know? <span class="opt">(optional)</span></label>
+      <textarea id="ctx" placeholder="Goal of this asset, target benchmark, known constraints…"></textarea>
+    </div>
+    <button class="submit" type="submit">Build prompt →</button>`;
+}
+
+/* pill multi-select, max 3 */
+function togglePill(el){
+  const on = document.querySelectorAll('#segPills .pill.on');
+  if(!el.classList.contains('on') && on.length>=3) return;
+  el.classList.toggle('on');
+}
+
+/* ---------------- brand system block (shared) ---------------- */
+const BRAND = `BRAND SYSTEM — BROADRIDGE
+------------------------------------
+Voice: clear, credible, forward-looking. Sentence case. Plain language — no hype, no jargon walls. Lead with the client outcome, back every claim with data.
+Visual: deep navy (#002B5C) to royal-blue (#0A5FD6) gradients; white Broadridge wordmark top-left; light-blue stat panels; thin line-art icons (globe, nodes, network); clean humanist sans, no serif.
+Compliance: every claim must be accurate and sourced; cite the study or source inline; add standard disclaimer language wherever performance or forward-looking results are referenced.`;
+
+/* ---------------- build prompt ---------------- */
+function buildPrompt(e){
+  e.preventDefault();
+  const seg = [...document.querySelectorAll('#segPills .pill.on')].map(p=>p.textContent);
+  let prompt = '';
+
+  if(current.mode==='create'){
+    const theme = val('theme'), region = getRadio('region'), stage = val('stage');
+    const persona = val('persona'), persona2 = val('persona2'), stories = val('stories');
+    const cta = val('cta') || 'Learn more with Broadridge';
+    const ctx = val('ctx');
+
+    prompt =
+`You are an expert capital-markets content marketer for Broadridge, focused on ${region}.
+
+${BRAND}
+
+BRIEF
+------------------------------------
+Content type:   ${current.label}
+Campaign theme: ${theme}
+Segment(s):     ${seg.length?seg.join(', '):'Not specified'}
+Region:         ${region}
+Buyer stage:    ${stage}
+Primary persona:   ${persona}${persona2 && persona2!=='— none —' ? `\nSecondary persona: ${persona2}`:''}
+Primary CTA:    ${cta}${stories?`\n\nClient stories / context:\n${stories}`:''}${ctx?`\n\nAdditional context:\n${ctx}`:''}
+
+${current.fmt}
+
+Write for the ${persona} at ${stage.toLowerCase()} stage. Ground the piece in the ${theme.toLowerCase()} narrative and any reference material attached to this chat. Keep it Broadridge-credible: no claim without a source.`;
+
+    if(current.research){
+      prompt += researchPrompt(seg, theme, region);
+    }
+  } else {
+    const data = val('pasteData'); const ctx = val('ctx');
+    prompt =
+`You are a senior B2B fintech marketing analyst reviewing work for Broadridge.
+
+${BRAND}
+
+${current.fmt}
+
+${seg.length?`Segment context: ${seg.join(', ')}\n`:''}${ctx?`Notes: ${ctx}\n`:''}
+INPUT TO ${current.mode==='analyze'?'ANALYZE':'REVIEW'}:
+------------------------------------
+${data||'[paste your content here]'}`;
+  }
+
+  document.getElementById('promptText').textContent = prompt;
+  document.getElementById('pTitle').textContent = current.label;
+  document.getElementById('claudeLink').href = claudeUrl();
+
+  /* visual preview only for the flagship carousel */
+  const vp = document.getElementById('visualPreview');
+  if(current.research && current.mode==='create'){
+    vp.innerHTML = smeHTML(suggestSMEs(seg, val('theme')));
+  } else if(current.flagship){
+    const theme = val('theme'), region = getRadio('region');
+    const cta = val('cta') || 'Download the report';
+    const copy = THEME_COPY[theme] || {h:theme,s:'A Broadridge point of view.'};
+    vp.innerHTML = carouselMock(region, copy, cta);
+  } else {
+    vp.innerHTML = '';
+  }
+
+  showScreen('preview');
+  window.scrollTo(0,0);
+}
+
+function researchPrompt(seg, theme, region){
+  const src=[...document.querySelectorAll('#srcPills .pill.on')].map(p=>p.dataset.src);
+  const segTxt = seg.length?seg.join(', '):'the segment in the brief';
+  let r = '';
+  if(src.length){
+    r += `\n\nSTEP 1: RESEARCH BEFORE YOU WRITE
+------------------------------------`;
+    if(src.includes('gong')){
+      const date = val('gongDate'), client = val('gongClient'), ind = val('gongIndustry'), kw = val('gongKeywords');
+      const calls = pickedIn('callPills');
+      r += `
+Gong calls: search call recordings and transcripts related to "${theme}".
+  Date range:  ${date.startsWith('Use brief')?'Last 6 months':date}
+  Client:      ${client||'Any account'}
+  Industry:    ${ind||segTxt}
+  Region:      ${region}
+  Call types:  ${calls.length?calls.join(', '):'All'}${kw?`\n  Keywords:    ${kw}`:''}
+  Pull out: recurring pain points, the exact language buyers use, objections, and any outcomes or metrics mentioned. Anonymize client names unless they are approved references.`;
+    }
+    if(src.includes('docs')){
+      const docs = pickedIn('docPills'), loc = val('docLocation');
+      r += `${src.includes('gong')?'\n':''}
+Internal documents: search our internal files on "${theme}" for ${segTxt}.
+  Document types: ${docs.length?docs.join(', '):'All relevant'}${loc?`\n  Where to look:  ${loc}`:''}
+  Pull out: proof points, stats with their source, client stories, and our current point of view.`;
+    }
+    r += `
+
+Before drafting, give me a short research summary: top themes, 5 to 8 strongest proof points, and a citation for each (call title and date, or document name). If you cannot access Gong or our internal drive, tell me which connector to turn on instead of guessing.`;
+  }
+  const smes = suggestSMEs(seg, theme);
+  r += `
+
+${src.length?'STEP 2':'NEXT'}: SUBJECT MATTER EXPERTS
+------------------------------------
+Suggested SMEs to interview or have review this ${current.label.toLowerCase()} (placeholder names, I will swap in real people):
+${smes.map(p=>`  - ${p.n}, ${p.t} (${p.area})`).join('\n')}
+For each SME: say which section they should own or review, write 3 interview questions specific to their area, and draft a short outreach message asking for 20 minutes of their time.`;
+  return r;
+}
+
+function carouselMock(region, copy, cta){
+  const regionShort = region.replace(' Markets','').toUpperCase();
+  return `
+  <div class="mockup-frame">
+    <div class="mockup-meta">LinkedIn carousel · 8 slides · 4:5<br><b>Broadridge · ${region}</b> — thought leadership</div>
+    <div class="slide">
+      <div class="srow">
+        <div class="swm">
+          <svg viewBox="0 0 48 48" fill="none"><path d="M14 15c6 0 9 4 10 9 1-5 4-9 10-9-3 3-4 6-4 9s1 6 4 9c-6 0-9-4-10-9-1 5-4 9-10 9 3-3 4-6 4-9s-1-6-4-9Z" fill="#fff"/></svg>
+          Broadridge
+        </div>
+        <div class="spill">${regionShort}</div>
+      </div>
+      <div class="sbadge">SLIDE 1 · COVER</div>
+      <h3>${copy.h}</h3>
+      <div class="ssub">${copy.s}</div>
+      <svg class="snodes" viewBox="0 0 120 120" fill="none" stroke="#8fb0d8" stroke-width="1.5">
+        <circle cx="60" cy="60" r="46"/><ellipse cx="60" cy="60" rx="20" ry="46"/><path d="M14 60h92M60 14v92"/>
+        <circle cx="88" cy="82" r="9" fill="#0a1f3d"/>
+      </svg>
+      <div class="sfoot"><span>${cta}</span><span>1 / 8</span></div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- helpers ---------------- */
+function val(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+function getRadio(name){const el=document.querySelector(`input[name="${name}"]:checked`);return el?el.value:'';}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function goHome(){showScreen('home');window.scrollTo(0,0);}
+function copyPrompt(){
+  const t=document.getElementById('promptText').textContent;
+  navigator.clipboard.writeText(t).then(showToast).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();showToast();
+  });
+}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg||'Prompt copied';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+function claudeUrl(){
+  const t=document.getElementById('promptText').textContent;
+  const url='https://claude.ai/new?q='+encodeURIComponent(t);
+  return url.length>7500?'https://claude.ai/new':url;
+}
+function openInClaude(e){
+  const t=document.getElementById('promptText').textContent;
+  const link=document.getElementById('claudeLink');
+  link.href=claudeUrl();
+  /* always copy as a backup */
+  try{navigator.clipboard.writeText(t).catch(()=>{});}catch(err){}
+  showToast(link.href==='https://claude.ai/new'?'Prompt copied. Paste it into Claude (Ctrl/Cmd + V)':'Opening Claude with your prompt');
+  /* let the browser follow the link in a new tab */
+}
+
+renderHome();
+</script>
+</body>
+</html>
